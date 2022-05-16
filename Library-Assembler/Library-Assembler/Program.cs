@@ -5,9 +5,19 @@ using System.Linq;
 
 namespace Library.Assembler
 {
-    class Program
+    public class Program
     {
-        static void Main()
+        private static string[] notAllowedKeywords = new string[] { "bin", "release", "debug", "txt", "jpg", "jpeg", "png",
+                "git", "obj", "dgml", ".editorconfig", ".vs", "Forms", "Test","forms", "Benchmark",
+            "benchmark", "form", "Form", "Gui", "gui", "NETCoreApp", "NET", "AssemblyAttributes",
+        "AssemblyInfo", "Class1", "TemporaryGeneratedFile"};
+
+        /// <summary>
+        /// | 37.98 ms | 0.573 ms | 0.536 ms | 1285.7143 GC(0)|                  5 MB
+        /// | 33.79 ms | 0.088 ms | 0.078 ms | 200.0000 GC(0) | 66.6667 GC(1) |  929 KB
+        /// | 28.94 ms | 0.139 ms | 0.130 ms | 156.2500       | 31.2500       |  783 KB
+        /// </summary>
+        public static void Main()
         {
             string solutionFolderPath = @"G:\DeskTop\grammar-analyzer\GrammarAnalyzer";
 
@@ -18,50 +28,34 @@ namespace Library.Assembler
                     StringSplitOptions.RemoveEmptyEntries)[..^1]);
             }
 
-            // check if .sln file was found
-            var solutionFiles = Directory.GetFiles(solutionFolderPath);
-            var isSolutionFolderFound = solutionFiles.FirstOrDefault(x => x.Contains(".sln")) != null;
+            var isSolutionFolderFound = Directory.EnumerateFiles(solutionFolderPath).FirstOrDefault(x => x.Contains(".sln")) != null;
             if (isSolutionFolderFound == false)
             {
                 throw new Exception(@"The path isn't correct cause impossible to find .sln file here.");
             }
 
-            var projectsToCopy = Directory.GetDirectories(solutionFolderPath);
+            var pathToCopy = string.Concat(Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\")), "AssemblyFiles");
 
-            //  string[] files = System.IO.Directory.GetFiles(currentDirName, "*.txt");
-
-            //foreach (string file in Directory.EnumerateFiles(solutionFolderPath, @"(?!\bword\b).cs", new EnumerationOptions()
-            //{
-            //    RecurseSubdirectories = true,
-            //    ReturnSpecialDirectories = false,
-
-            //}))
-            //{
-            //    Console.WriteLine(file);
-            //}
-            foreach (var item in GetFiles(solutionFolderPath, extenstionInclude: ".cs", exclude: new string[] { "bin" }))
+            var isDirectoryExists = Directory.Exists(pathToCopy);
+            if (isDirectoryExists)
             {
-                Console.WriteLine(item);
+                Directory.Delete(pathToCopy, recursive: true);
+                Directory.CreateDirectory(pathToCopy);
+            }
+            else
+            {
+                Directory.CreateDirectory(pathToCopy);
             }
 
-            var pathToCopy = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\"));
+            foreach (var file in GetFiles(solutionFolderPath))
+            {
+                var fileName = string.Concat(pathToCopy, "\\", Path.GetFileName(file));
+                File.Copy(file, fileName, overwrite: true);
+            }
         }
 
-        private static bool IsExcluded(string fileName, string extenstionInclude, string[] exclude)
+        private static bool IsExcluded(string fileName)
         {
-            string[] notAllowedKeywords = new string[] { "bin", "release", "debug", "txt", "jpg", "jpeg", "png",
-                "git", "obj", "dgml", ".editorconfig", ".vs"};
-            if (exclude.Contains(Path.GetFileName(fileName)))
-            {
-                return true;
-            }
-
-            string extension = Path.GetExtension(fileName);
-            if (extension.Equals(extenstionInclude) == false)
-            {
-                return true;
-            }
-
             foreach (var forbiddenWord in notAllowedKeywords)
             {
                 if (fileName.Contains(forbiddenWord, StringComparison.OrdinalIgnoreCase))
@@ -69,17 +63,14 @@ namespace Library.Assembler
                     return true;
                 }
             }
-            return string.IsNullOrWhiteSpace(extension) || exclude.Contains("*" + extension);
+            string extension = Path.GetExtension(fileName);
+            return string.IsNullOrWhiteSpace(extension);
         }
 
-        public static IEnumerable<string> GetFiles(string path, string extenstionInclude, string[] exclude = null,
+        public static IEnumerable<string> GetFiles(string path,
             SearchOption searchOption = SearchOption.AllDirectories)
         {
-            var files = Directory.EnumerateFiles(path, "*.*", searchOption);
-            if (exclude != null && exclude.Length > 0)
-            {
-                files = files.Where(f => !IsExcluded(f, extenstionInclude, exclude));
-            }
+            var files = Directory.EnumerateFiles(path, "*.cs", searchOption).Where(f => !IsExcluded(f));
             return files;
         }
     }
