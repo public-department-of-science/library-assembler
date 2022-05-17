@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Library-Assembler": {
+      "commandName": "Project",
+      "commandLineArgs": "\"Assembly\" \"1.0.0\" \"G:\\DeskTop\\grammar-analyzer\\GrammarAnalyzer\" \"G:\\DeskTop\\grammar-analyzer\\GrammarAnalyzer\\Grammar.Analyzer.Library\"",
+      "remoteDebugEnabled": false
+    }
+  }
+}

@@ -1,7 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Library.Assembler;
-using System.IO;
-using System.Text;
 
 namespace Common.Benchmarking
 {
@@ -12,7 +10,8 @@ namespace Common.Benchmarking
         [Benchmark]
         public void StringBuilderFixedSize()
         {
-            Program.Main();
+            Program.Main(new string[] { "AssembledFiles", @"G:\DeskTop\grammar-analyzer\GrammarAnalyzer", 
+                @"G:\DeskTop\grammar-analyzer\GrammarAnalyzer\Grammar.Analyzer.Library" });
         }
     }
 }
