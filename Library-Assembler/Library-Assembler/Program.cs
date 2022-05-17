@@ -9,12 +9,14 @@ namespace Library.Assembler
     public class Program
     {
         // pri #3
-        private static string[] skipByEquality = new string[] { "bin", "release", "debug", "obj", ".editorconfig", ".vs", "form", "Form" };
+        private static string[] skipByEquality = new string[] { "bin", "release", "debug", "obj", ".editorconfig", ".vs",
+            "form", "Form", "Third.Part.References" };
+
         // pri #2
         private static string[] skipByPathSegmentContains = new string[] { "TemporaryGeneratedFile", "NET", "AssemblyAttributes", "AssemblyInfo", "Class1",
             "git", "Benchmark", "benchmark", "Gui", "gui", "NETCoreApp", "Forms", "Test","forms", "Library"};
         // pri #1
-        private static string[] skipExtensions = new string[] { "txt", "jpg", "jpeg", "png", "dgml", "csproj" };
+        private static string[] skipExtensions = new string[] { "txt", "jpg", "jpeg", "png", "dgml", "csproj", "json" };
 
         // ... 6-7MB - works wrong
         // | 37.98 ms | 0.573 ms | 0.536 ms | 1285.7143 GC(0)|                  5 MB
@@ -30,7 +32,7 @@ namespace Library.Assembler
         /// <param name="args">
         public static void Main(string[] args)
         {
-            throw new Exception("Check values for the solution to copy from path and path for the destination point before the run.");
+           // throw new Exception("Check values for the solution to copy from path and path for the destination point before the run.");
 
             if (args.Length != 4)
             {
@@ -64,7 +66,8 @@ namespace Library.Assembler
                 throw new Exception($"Solution folder: {pathSegment} was wrong defined and do not exists yet.");
             }
 
-            var isSolutionFolderFound = Directory.EnumerateFiles(solutionFolderPath).FirstOrDefault(x => x.Contains(".sln")) != null;
+            var isSolutionFolderFound = Directory.EnumerateFiles(solutionFolderPath)
+                    .FirstOrDefault(x => x.Contains(".sln", StringComparison.OrdinalIgnoreCase)) != null;
             if (isSolutionFolderFound == false)
             {
                 throw new Exception(@"The path isn't correct cause impossible to find .sln file here.");
@@ -139,7 +142,7 @@ namespace Library.Assembler
             {
                 foreach (var skipWord in skipByEquality)
                 {
-                    excludeSegmentFound = skipWord.Equals(segment);
+                    excludeSegmentFound = skipWord.Equals(segment, StringComparison.InvariantCultureIgnoreCase);
                     if (excludeSegmentFound)
                     {
                         return true;
