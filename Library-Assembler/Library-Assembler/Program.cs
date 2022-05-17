@@ -32,7 +32,7 @@ namespace Library.Assembler
         /// <param name="args">
         public static void Main(string[] args)
         {
-           // throw new Exception("Check values for the solution to copy from path and path for the destination point before the run.");
+            throw new Exception("Check values for the solution to copy from path and path for the destination point before the run.");
 
             if (args.Length != 4)
             {
