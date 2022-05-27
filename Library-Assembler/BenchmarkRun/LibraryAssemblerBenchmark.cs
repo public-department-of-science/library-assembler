@@ -8,7 +8,7 @@ namespace Common.Benchmarking
     public class LibraryAssemblerBenchmark
     {
         [Benchmark]
-        public void StringBuilderFixedSize()
+        public void LibraryAssemblerRun()
         {
             Program.Main(new string[] { "AssembledFiles", @"G:\DeskTop\grammar-analyzer\GrammarAnalyzer", 
                 @"G:\DeskTop\grammar-analyzer\GrammarAnalyzer\Grammar.Analyzer.Library" });
